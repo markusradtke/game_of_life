@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-iterations = 10000
-interval = 10
+iterations = 100
+interval = 100
 global_fig, ax1 = plt.subplots(figsize=(10, 10))
 
 global board
@@ -12,6 +12,11 @@ global board
 def init_board(size):
     global board
     board = np.zeros((size, size))
+
+
+def init_first():
+    global first
+    first = True
 
 
 # initialize a board with a chosen distribution
@@ -24,10 +29,13 @@ def init_random_board(amt_living, size):
 
 def create_frame_std(i: int):
     global board
+    global first
     if i == iterations-1:
+        how_many_live()
+        last_frame = global_fig.savefig('last_frame.png')
         plt.close(global_fig)
     apply_standard_rules()
-    ax1.set_title(f'Iteration: {i}')
+    ax1.set_title(f'Iteration: {i+1}')
     bla = ax1.imshow(board, cmap='gist_yarg')
     return [bla]
 
@@ -227,33 +235,20 @@ def apply_p_one_rules():
     board = next_gen_board
 
 
-def run_boy_run(board, iterations, rules):
-    first = True
+def run_boy_run(rules):
     if rules == 'standard':
         for i in range(0, iterations):
-            if first:
-                nextgen = apply_standard_rules(board)
-                first = False
-            else:
-                nextgen = apply_standard_rules(nextgen)
+            apply_standard_rules()
     elif rules == 'm_one':
         for i in range(0, iterations):
-            if first:
-                nextgen = apply_m_one_rules(board)
-                first = False
-            else:
-                nextgen = apply_m_one_rules(nextgen)
+            apply_m_one_rules()
     elif rules == 'p_one':
         for i in range(0, iterations):
-            if first:
-                nextgen = apply_p_one_rules(board)
-                first = False
-            else:
-                nextgen = apply_p_one_rules(nextgen)
-    return nextgen
+            apply_p_one_rules()
 
 
-def how_many_live(board):
+def how_many_live():
+    global board
     wholesum = board.sum()
     print('all alive cells: ', wholesum)
     return wholesum
@@ -265,19 +260,13 @@ def user_input_configuration(size):
     fig = plt.figure(figsize=(10, 10))
 
     ax = plt.axes()
-    # plotting this grid, it's boring for now, all white, since the grid is nothing but zeros
     im = ax.imshow(dummy_grid, cmap='binary')
-    # Plotting lines to demarcate the cells in the grid
     for n in range(0, len(dummy_grid)):
         plt.axvline(.5 + n)
         plt.axhline(.5 + n)
-    # to track selected/deselected points
     startup_points = []
-    # keeping input live indefinitely
     while True:
-        # ginput, looking for 1 value at a time, setting timeout to -1 means it will wait indefinetely
         pt = plt.ginput(1, timeout=-1)
-        # getting coordinates, rounded to whole numbers
         try:
             p_1 = int(round(pt[0][1], 0))
         except IndexError as e:
@@ -285,7 +274,6 @@ def user_input_configuration(size):
         p_2 = int(round(pt[0][0], 0))
         coord = (p_1, p_2)
         print(coord)
-        # updating the tracking of which points have been selected, and changing the display grid
         if coord in startup_points:
             dummy_grid[p_1][p_2] = 0
             startup_points.remove(coord)
@@ -328,18 +316,28 @@ if __name__ == '__main__':
         board_size = input('The grid will be quadratic, what should be the size of a side?\n')
         board_size = int(board_size)
         start_board = init_random_board(percentage, board_size)
-        how_many_live(start_board)
+        tmp_fig = plt.figure(figsize=(10, 10))
+        plt.imshow(start_board, cmap='gist_yarg')
+        plt.savefig('first_frame.png', cmap='gist_yarg')
+        plt.close(tmp_fig)
+        how_many_live()
     elif mode == 'gra':
         board_size = input('The grid will be quadratic, what should be the size of a side?\n')
         board_size = int(board_size)
         print('End input with the enter key.')
         grid = user_input_configuration(board_size)
-        how_many_live(grid)
         board = grid
+        tmp_fig = plt.figure(figsize=(10, 10))
+        plt.imshow(grid, cmap='gist_yarg')
+        plt.savefig('first_frame.png', cmap='gist_yarg')
+        plt.close(tmp_fig)
     elif mode == 'txt':
         filename = input('Name of your txt file: ')
         board = txt_input(filename)
-        how_many_live(board)
+        tmp_fig = plt.figure(figsize=(10, 10))
+        plt.imshow(board, cmap='gist_yarg')
+        plt.savefig('first_frame.png', cmap='gist_yarg')
+        plt.close(tmp_fig)
     if rules == 'std':
         animate_std(iterations, interval)
     elif rules == 'mone':
