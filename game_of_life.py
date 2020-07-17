@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import os
 
 iterations = 500
 interval = 100
@@ -35,7 +36,6 @@ def create_frame_std(i: int):
         # last_frame = global_fig.savefig('last_frame.png')
         plt.close(global_fig)
     apply_standard_rules()
-    ax1.set_title(f'Iteration: {i+1}')
     bla = ax1.imshow(board, cmap='gist_yarg')
     return [bla]
 
@@ -251,7 +251,7 @@ def run_boy_run(rules):
 def how_many_live():
     global board
     wholesum = board.sum()
-    print(wholesum)
+    print("Number of living cells: " + str(wholesum))
     return wholesum
 
 
@@ -351,6 +351,10 @@ if __name__ == '__main__':
 
     rules = input('What ruleset do you want to use? (std/mone/pone)\n')
     mode = input('Do you want graphic, generated or text file input? (gra/gen/txt):\n')
+    try:
+        os.mkdir('images')
+    except FileExistsError:
+        pass
     if mode == 'gen':
         percentage = input('The grid cells will be randomly chosen to be alive or dead.'
                            '\nHow many cells should be alive (in percent)?\n')
@@ -358,12 +362,12 @@ if __name__ == '__main__':
         board_size = input('The grid will be quadratic, what should be the size of a side?\n')
         board_size = int(board_size)
         start_board = init_random_board(percentage, board_size)
-        tmp_fig = plt.figure(figsize=(10, 10))
-        plt.imshow(start_board, cmap='gist_yarg')
-        str_perc = str(percentage).replace('.', '')
-        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}_p-{str_perc}.png'
-        plt.savefig(savestr, cmap='gist_yarg')
-        plt.close(tmp_fig)
+        # tmp_fig = plt.figure(figsize=(10, 10))
+        # plt.imshow(start_board, cmap='gist_yarg')
+        # str_perc = str(percentage).replace('.', '')
+        # savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}_p-{str_perc}.png'
+        # plt.savefig(savestr, cmap='gist_yarg')
+        # plt.close(tmp_fig)
         how_many_live()
     elif mode == 'gra':
         board_size = input('The grid will be quadratic, what should be the size of a side?\n')
@@ -371,20 +375,20 @@ if __name__ == '__main__':
         print('End input with the enter key.')
         grid = user_input_configuration(board_size)
         board = grid
-        tmp_fig = plt.figure(figsize=(10, 10))
-        plt.imshow(grid, cmap='gist_yarg')
-        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
-        plt.savefig(savestr, cmap='gist_yarg')
-        plt.close(tmp_fig)
+        # tmp_fig = plt.figure(figsize=(10, 10))
+        # plt.imshow(grid, cmap='gist_yarg')
+        # savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
+        # plt.savefig(savestr, cmap='gist_yarg')
+        # plt.close(tmp_fig)
     elif mode == 'txt':
         filename = input('Name of your txt file: ')
         board = txt_input(filename)
         board_size = board.shape[0]
-        tmp_fig = plt.figure(figsize=(10, 10))
-        plt.imshow(board, cmap='gist_yarg')
-        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
-        plt.savefig(savestr, cmap='gist_yarg')
-        plt.close(tmp_fig)
+        # tmp_fig = plt.figure(figsize=(10, 10))
+        # plt.imshow(board, cmap='gist_yarg')
+        # savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
+        # plt.savefig(savestr, cmap='gist_yarg')
+        # plt.close(tmp_fig)
     if rules == 'std':
         animate_std(iterations, interval)
     elif rules == 'mone':
