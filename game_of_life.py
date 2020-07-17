@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-iterations = 100
+iterations = 500
 interval = 100
 global_fig, ax1 = plt.subplots(figsize=(10, 10))
 
@@ -32,7 +32,7 @@ def create_frame_std(i: int):
     global first
     if i == iterations-1:
         how_many_live()
-        last_frame = global_fig.savefig('last_frame.png')
+        # last_frame = global_fig.savefig('last_frame.png')
         plt.close(global_fig)
     apply_standard_rules()
     ax1.set_title(f'Iteration: {i+1}')
@@ -43,6 +43,7 @@ def create_frame_std(i: int):
 def create_frame_m_one(i: int):
     global board
     if i == iterations-1:
+        how_many_live()
         plt.close(global_fig)
     apply_m_one_rules()
     bla = ax1.imshow(board, cmap='gist_yarg')
@@ -53,6 +54,7 @@ def create_frame_p_one(i: int):
     global board
     apply_p_one_rules()
     if i == iterations-1:
+        how_many_live()
         plt.close(global_fig)
     bla = ax1.imshow(board, cmap='gist_yarg')
     return [bla]
@@ -63,7 +65,6 @@ def apply_standard_rules():
     next_gen_board = np.zeros((board.shape[0], board.shape[1]), int)
     for i in range(board.shape[0]):
         for j in range(board.shape[1]):
-            # rule 0 - survivals; two or three neighbouring counters survives
             tmp_sum = 0
             if i == 0:
                 t = 0
@@ -236,13 +237,13 @@ def apply_p_one_rules():
 
 
 def run_boy_run(rules):
-    if rules == 'standard':
+    if rules == 'std':
         for i in range(0, iterations):
             apply_standard_rules()
-    elif rules == 'm_one':
+    elif rules == 'mone':
         for i in range(0, iterations):
             apply_m_one_rules()
-    elif rules == 'p_one':
+    elif rules == 'pone':
         for i in range(0, iterations):
             apply_p_one_rules()
 
@@ -250,7 +251,7 @@ def run_boy_run(rules):
 def how_many_live():
     global board
     wholesum = board.sum()
-    print('all alive cells: ', wholesum)
+    print(wholesum)
     return wholesum
 
 
@@ -307,6 +308,47 @@ def animate_p_one(frames, interval):
 
 
 if __name__ == '__main__':
+    # ONLY USE FOR SIMULATIONS WITHOUT GRAPHICS
+    # savestr = ''
+    # r = input('rules')
+    # #rules = ['std', 'mone', 'pone']
+    # mode = 'gen'
+    # board_size = 100
+    # for i in range(0, 100, 5):
+    #     i = i / 100
+    #     start_board = init_random_board(i, board_size)
+    #     tmp_fig = plt.figure(figsize=(10, 10))
+    #     plt.imshow(start_board, cmap='gist_yarg')
+    #     str_perc = str(i).replace('.', '')
+    #     alive = how_many_live()
+    #     savestr = f'images/r-{r}_m-{mode}_bs-{board_size}_p-{str_perc}_a-{alive}.png'
+    #     str_first = savestr.split('/')
+    #     str_first = str_first[0] + '/first_' + str_first[1]
+    #     plt.savefig(str_first, cmap='gist_yarg')
+    #     plt.close(tmp_fig)
+    #     if r == 'std':
+    #         run_boy_run('std')
+    #     elif r == 'mone':
+    #         run_boy_run('mone')
+    #     elif r == 'pone':
+    #         run_boy_run('pone')
+    #     ax1.imshow(board, cmap='gist_yarg')
+    #     alive = how_many_live()
+    #     savestr = f'images/r-{r}_m-{mode}_bs-{board_size}_p-{str_perc}_a-{alive}.png'
+    #     str_last = savestr.split('/')
+    #     str_last = str_last[0] + '/last_' + str_last[1]
+    #     plt.savefig(str_last, cmap='gist_yarg')
+    # if rules == 'std':
+    #     run_boy_run('std')
+    # elif rules == 'mone':
+    #     run_boy_run('mone')
+    # elif rules == 'pone':
+    #     run_boy_run('pone')
+    # ax1.imshow(board, cmap='gist_yarg')
+    # savestr = savestr.split('/')
+    # savestr = savestr[0] + '/last_' + savestr[1]
+    # plt.savefig(savestr, cmap='gist_yarg')
+
     rules = input('What ruleset do you want to use? (std/mone/pone)\n')
     mode = input('Do you want graphic, generated or text file input? (gra/gen/txt):\n')
     if mode == 'gen':
@@ -318,7 +360,9 @@ if __name__ == '__main__':
         start_board = init_random_board(percentage, board_size)
         tmp_fig = plt.figure(figsize=(10, 10))
         plt.imshow(start_board, cmap='gist_yarg')
-        plt.savefig('first_frame.png', cmap='gist_yarg')
+        str_perc = str(percentage).replace('.', '')
+        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}_p-{str_perc}.png'
+        plt.savefig(savestr, cmap='gist_yarg')
         plt.close(tmp_fig)
         how_many_live()
     elif mode == 'gra':
@@ -329,14 +373,17 @@ if __name__ == '__main__':
         board = grid
         tmp_fig = plt.figure(figsize=(10, 10))
         plt.imshow(grid, cmap='gist_yarg')
-        plt.savefig('first_frame.png', cmap='gist_yarg')
+        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
+        plt.savefig(savestr, cmap='gist_yarg')
         plt.close(tmp_fig)
     elif mode == 'txt':
         filename = input('Name of your txt file: ')
         board = txt_input(filename)
+        board_size = board.shape[0]
         tmp_fig = plt.figure(figsize=(10, 10))
         plt.imshow(board, cmap='gist_yarg')
-        plt.savefig('first_frame.png', cmap='gist_yarg')
+        savestr = f'images/first_r-{rules}_m-{mode}_bs-{board_size}.png'
+        plt.savefig(savestr, cmap='gist_yarg')
         plt.close(tmp_fig)
     if rules == 'std':
         animate_std(iterations, interval)
@@ -345,3 +392,4 @@ if __name__ == '__main__':
     elif rules == 'pone':
         animate_p_one(iterations, interval)
     plt.show()
+
